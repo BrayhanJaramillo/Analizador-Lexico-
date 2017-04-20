@@ -42,6 +42,10 @@ public class Code {
      * @param nombre
      * @return true si es posible guardar los contactos, false si no es posible
      */
+    public Code() {
+        llenarArrayNumeros();
+    }
+
     public boolean guardarArchivoContacto(String palabras, String nombreArchivo) {
 
         Charset utf = StandardCharsets.UTF_8;
@@ -242,77 +246,100 @@ public class Code {
         q.add(tele);
     }
 
-    
-    
-    private final String[] palabrasReservadasIniciales = {"Traer de", "Elimine de", "Actualice en"};
+    private final ArrayList<Integer> numeros = new ArrayList<>();
 
-    private final String[] palabrasReservadas = {"donde",
-        "sea", "igual", "a", "o", "diferente", "-", "como", "agrupado", "por",
-        "este", "entre", "y", "no", "{", "}", "ordenado", "descendente", "ascente",
-        "todos", "los", "datos", "\"", ".", ","};
-
-    private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-
-    private boolean reservado;
-
-    public void analizarPalabras(String[] cadena) {
-        for (int i = 0; i < cadena.length; i++) {
-            if (!cadena[i].isEmpty()) {
-                ArrayList<String> palabrasReservadas = buscarPalabraReservada(cadena[i]);
-                if (this.reservado) {
-                    if (palabrasReservadas.size() == 0) {
-                        System.out.println("vamos bien");
-                        if (buscarPalabraReservada(cadena[i]).size() > 0) {
-                            System.out.println("Va mejor");
-                        }
-                    }
-                }
-                for (int j = 0; j < palabrasReservadas.size(); j++) {
-                    if (palabrasReservadas.get(j).equals(cadena[i])) {
-
-                        if (cadena[i].equals("Traer") || (cadena[i].equals("Elimine"))) {
-                            try {
-                                if (cadena[i + 1].equals("de")) {
-                                    System.out.println("Palabra Reservada " + cadena[i] + " " + cadena[i + 1]);
-
-                                    this.reservado = true;
-                                } else {
-                                    System.out.println("Error debe ir acompañada de la palabra de en la linea");
-                                }
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                System.out.println("palabra normal" + cadena[i]);
-                            }
-
-                        } else if (cadena[i].equals("Actualice")) {
-                            try {
-                                if (cadena[i + 1].equals("en")) {
-                                    System.out.println("Palabra Reservada " + cadena[i] + " " + cadena[i + 1]);
-                                    this.reservado = true;
-                                } else {
-                                    System.out.println("palabra normal" + cadena[i]);
-                                }
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                System.out.println("palabra normal" + cadena[i]);
-                            }
-                        } else {
-                            System.out.println("Palabra Reservada " + palabrasReservadas.get(j));
-                            this.reservado = true;
-                        }
-
-                    }
-                }
-            }
+    public void llenarArrayNumeros() {
+        for (int i = 0; i < 10; i++) {
+            this.numeros.add(i);
         }
     }
 
-    public ArrayList<String> buscarPalabraReservada(String letra) {
-        ArrayList<String> retorno = new ArrayList<>();
-        for (int i = 0; i < palabrasReservadas.length; i++) {
-            if (palabrasReservadas[i].equals(letra)) {
-                retorno.add(palabrasReservadas[i]);
+    private final ArrayList<String> palabrasReservadas = new ArrayList<String>() {
+        {
+            add("Traer");
+            add("de");
+            add("Elimine");
+            add("Actualice");
+            add("en");
+            add("donde");
+            add("sea");
+            add("igual");
+            add("a");
+            add("o");
+            add("diferente");
+            add("-");
+            add("como");
+            add("agrupado");
+            add("por");
+            add("este");
+            add("entre");
+            add("y");
+            add("no");
+            add("{");
+            add("}");
+            add("ordenado");
+            add("descendente");
+            add("ascente");
+            add("todos");
+            add("los");
+            add("datos");
+            add("\"");
+            add(".");
+            add(",");
+        }
+    };
+
+    private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    public ArrayList<String> lectura = new ArrayList<>();
+    public boolean bien;
+    DefaultTableModel modeloTabla = new DefaultTableModel();
+
+    public void analizarPalabras(String[] palabras, JTextArea error, JTable jtDatos) {
+
+        modeloTabla = (DefaultTableModel) jtDatos.getModel();
+        for (int i = 0; i < palabras.length; i++) {
+            String palabra = "";
+
+            if (palabras[i].length() > 0) {
+
+                for (int j = 0; j < palabras[i].length(); j++) {
+                    palabra += palabras[i].charAt(j);
+                }
+
+                if (bien) {
+                    if (palabra.equals(palabrasReservadas.get(1))) {
+                        lectura.add(palabra);
+                        bien = false;
+                        modeloTabla.addRow(new Object[]{"Palabra Reservada", lectura.get(0) + " " + lectura.get(1)});
+                        lectura.clear();
+                        continue;
+                    } else {
+                        error.setText("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
+                        System.err.println("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
+                        break;
+                    }
+                }
+
+                if (palabra.equals(palabrasReservadas.get(0))
+                        || palabra.equals(palabrasReservadas.get(2))) {
+                    lectura.add(palabra);
+                    bien = true;
+                    continue;
+                } else if (palabra.equals(palabrasReservadas.get(3))) {
+                    lectura.add(palabra);
+                    bien = true;
+                    continue;
+                } else {
+                    error.setText("Debe de empezar con Traer, Elimine o Actualice");
+                    System.err.println("Debe de empezar con Traer, Elimine o Actualice");
+                    break;
+                }
+                
+                
+                
+
             }
         }
-        return retorno;
     }
 
 }

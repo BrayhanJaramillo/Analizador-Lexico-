@@ -7,6 +7,7 @@ package desarrollo;
 
 import java.awt.event.KeyEvent;
 import javax.swing.DefaultListModel;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,6 +19,7 @@ public class Interfaz extends javax.swing.JFrame {
 
     private int contador = 1;
     DefaultListModel modeloLista;
+    DefaultTableModel modeloTabla;
 
     /**
      * Creates new form Interfaz
@@ -25,6 +27,7 @@ public class Interfaz extends javax.swing.JFrame {
     public Interfaz() {
         initComponents();
         modeloLista = new DefaultListModel();
+        modeloTabla = new DefaultTableModel();
         modeloLista.addElement(this.contador);
         jLContador.setModel(modeloLista);
         area.requestFocus();
@@ -42,7 +45,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable = new javax.swing.JTable();
+        TablaDatos = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextAreaError = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -63,7 +66,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
 
-        jTable.setModel(new javax.swing.table.DefaultTableModel(
+        TablaDatos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -71,7 +74,7 @@ public class Interfaz extends javax.swing.JFrame {
                 "TOKEN", "LEXEMA", "LINEA"
             }
         ));
-        jScrollPane1.setViewportView(jTable);
+        jScrollPane1.setViewportView(TablaDatos);
 
         jTextAreaError.setColumns(20);
         jTextAreaError.setRows(5);
@@ -222,12 +225,12 @@ public class Interfaz extends javax.swing.JFrame {
         // TODO add your handling code here:
         String ruta = code.abrirArchivo();
         String datos = code.cargarContenido(ruta, area);
-        System.out.println(ruta);
-        System.out.println(datos);
     }//GEN-LAST:event_jRadioButtonMenuItem1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        jTextAreaError.setText("");
+        String cadena = area.getText().replace("\n", " ");
+        code.analizarPalabras(cadena.split(" "), jTextAreaError, TablaDatos);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -268,6 +271,7 @@ public class Interfaz extends javax.swing.JFrame {
     //
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable TablaDatos;
     private javax.swing.JTextArea area;
     private javax.swing.JButton jButton1;
     private javax.swing.JList<String> jLContador;
@@ -283,7 +287,6 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable;
     private javax.swing.JTextArea jTextAreaError;
     private javax.swing.JLabel lblLinea;
     // End of variables declaration//GEN-END:variables

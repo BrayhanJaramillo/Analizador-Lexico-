@@ -261,6 +261,7 @@ public class Code {
             add("Elimine");
             add("Actualice");
             add("en");
+            add("Ingresar");
             add("donde");
             add("sea");
             add("igual");
@@ -282,6 +283,7 @@ public class Code {
             add("ascente");
             add("todos");
             add("los");
+            add("el");
             add("datos");
             add("\"");
             add(".");
@@ -291,82 +293,162 @@ public class Code {
 
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
-    public boolean bien;
+    public int contador = 0;
     public boolean iniciaBien;
+    public ArrayList<String> palabrasNormalizadas;
     DefaultTableModel modeloTabla = new DefaultTableModel();
 
+    /**
+     * Metodo que nos permite validar
+     *
+     * @param palabras
+     * @param error
+     * @param jtDatos
+     */
     public void analizarPalabras(String[] palabras, JTextArea error, JTable jtDatos) {
-
         modeloTabla = (DefaultTableModel) jtDatos.getModel();
-        for (int i = 0; i < palabras.length; i++) {
-            String palabra = "";
+        this.palabrasNormalizadas = normalizarArray(palabras);
 
-            if (palabras[i].length() > 0) {
+        String palabra = obtenerPalabra(this.palabrasNormalizadas, this.contador);
+        if (palabrasIniciales(palabra, error)) {
+            aumentarContador();
+            if (acompaniantePalabraInicial(obtenerPalabra(this.palabrasNormalizadas, this.contador), error)) {
+                aumentarContador();
+                if (!palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
+                    aumentarContador();
+                    if (this.palabrasNormalizadas.size() - 1 == this.contador) {
+                        if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals(".")) {
+                            System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf("."));
+                            System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf("."));
+                            if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
+                                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".")) {
 
-                for (int j = 0; j < palabras[i].length(); j++) {
-                    palabra += palabras[i].charAt(j);
-                }
+                                } else {
+                                    error.setText("Solo Debe de tener un '.'");
+                                    System.err.println("Solo Debe de tener un '.'");
+                                }
 
-                if (iniciaBien) {
-
-                    if (palabra.equals(palabrasReservadas.get(1))) {
-                        lectura.add(palabra);
-                        bien = true;
-                        iniciaBien = false;
-                        modeloTabla.addRow(new Object[]{"Palabra Reservada", lectura.get(0) + " " + lectura.get(1)});
-                        lectura.clear();
-                        break;
-                    } else {
-                        error.setText("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
-                        System.err.println("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
-                        continue;
-                    }
-                }
-
-                if (bien) {
-                    try {
-
-                        if (!palabras[palabras.length - 1].equals(".")) {
-                            error.setText("la palabra debe de terminar en punto(.)");
-                            System.err.println("la palabra debe de terminar en punto(.)");
-                            continue;
-                        }else{
-                             modeloTabla.addRow(new Object[]{"Palabra Reservada", "."});
+                            } else {
+                                error.setText("Debe de terminar con '.'");
+                                System.err.println("Debe de terminar con '.'");
+                            }
                         }
-
-                        if (!palabrasReservadas.contains(palabra)) {
-                            modeloTabla.addRow(new Object[]{"Identificador", palabra});
-                            bien = false;
-                            break;
-                        } else if (palabrasReservadas.contains(palabra)) {
-                            error.setText("La Sentencia debe de tener un identificador antes del punto(.)");
-                            System.err.println("La Sentencia debe de tener un identificador antes del punto(.)");
-                            break;
-                        } else if (numeros.contains(Integer.parseInt(palabra))) {
-                            modeloTabla.addRow(new Object[]{"Entero", palabra});
-                            continue;
-                        }
-                    } catch (NumberFormatException number) {
-                        System.err.println("No castea" + number);
                     }
-                }
-
-                if (palabra.equals(palabrasReservadas.get(0))
-                        || palabra.equals(palabrasReservadas.get(2))) {
-                    lectura.add(palabra);
-                    iniciaBien = true;
-                    continue;
-                } else if (palabra.equals(palabrasReservadas.get(3))) {
-                    lectura.add(palabra);
-                    iniciaBien = true;
-                    continue;
                 } else {
-                    error.setText("Debe de empezar con Traer, Elimine o Actualice");
-                    System.err.println("Debe de empezar con Traer, Elimine o Actualice");
-                    continue;
+                    error.setText("Despues de una palabra reservada debe ir un identificador");
+                    System.err.println("Despues de una palabra reservada debe ir un identificador");
                 }
-
             }
+        }
+
+        this.contador = 0;
+
+    }
+
+    /**
+     * con este metodo garantizamos que la primera palabra sea Traer, Elimine o
+     * Actualice
+     *
+     * @param palabra, la palabra a analizar
+     * @param error, text area donde se ponen el error
+     * @return verdadero si inicia con una de las palabras anteriores, de lo
+     * contrario muestra el error en la caja de texto
+     */
+    public boolean palabrasIniciales(String palabra, JTextArea error) {
+        boolean retorno = false;
+        if (palabra.equals(this.palabrasReservadas.get(0))
+                || palabra.equals(this.palabrasReservadas.get(2))
+                || palabra.equals(this.palabrasReservadas.get(3))
+                || palabra.equals(this.palabrasReservadas.get(5))) {
+            this.lectura.add(palabra);
+            retorno = true;
+        } else {
+            error.setText("Debe de empezar con Traer, Elimine, Ingresar o Actualice");
+            System.err.println("Debe de empezar con Traer, Elimine o Actualice");
+        }
+        return retorno;
+    }
+
+    /**
+     * metodo que nos permite saber si despues de una palabra reservada como lo
+     * son Traer, Elimine, Actualice, siguen con su respectivo acompañante ya
+     * que es indispensable saberlo.
+     *
+     * @param palabra, la siguente palabra despues de la primera
+     * @param error, el error que se le va a mostrar al usuario
+     * @return verdadero si la palabra(acompañante) es la correcta de lo
+     * contrario falso
+     */
+    public boolean acompaniantePalabraInicial(String palabra, JTextArea error) {
+        boolean retorno = false;
+        if ((this.lectura.contains("Traer")) && palabra.equals(this.palabrasReservadas.get(1))) {
+            this.lectura.add(palabra);
+            retorno = true;
+        } else if ((this.lectura.contains("Actualice")
+                || this.lectura.contains("Elimine")
+                || this.lectura.contains("Ingresar"))
+                && (palabra.equals(this.palabrasReservadas.get(4)))) {
+            this.lectura.add(palabra);
+            retorno = true;
+        } else {
+            error.setText(mensaje(lectura.get(0)));
+            System.err.println(mensaje(lectura.get(0)));
+        }
+        return retorno;
+    }
+
+    /**
+     * Retorna la palabra obtenida en cada iteracion
+     *
+     * @param palabras lista de palabras
+     * @param i, posicion de la palabra que se quiere obtener
+     * @return la palabra obtenida
+     */
+    public String obtenerPalabra(ArrayList<String> palabras, int i) {
+        String palabra = "";
+        for (int j = 0; j < palabras.get(i).length(); j++) {
+            palabra += palabras.get(i).charAt(j);
+        }
+        return palabra;
+    }
+
+    /**
+     * metodo que nos permite quitar los espacion vacios, en un array, se guarda
+     * en un arreglo para normalizarlo
+     *
+     * @param array, el array con las palabras obtenidas del textArea
+     * @return un arraylist con solo las palabras sin los espacios
+     */
+    public ArrayList<String> normalizarArray(String[] array) {
+        ArrayList<String> retorno = new ArrayList<>();
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].length() > 0) {
+                retorno.add(array[i]);
+            }
+        }
+        return retorno;
+    }
+
+    /**
+     * metodo que nos permite escribir un mensaje para que sea claro para el
+     * usuario
+     *
+     * @param palabra, la palabra para ponerla en el mensaje
+     * @return el mensaje bien estructurado
+     */
+    public String mensaje(String palabra) {
+        String mesaje = "";
+        if (palabra.equals("Actualice") || palabra.equals("Elimine") || palabra.equals("Ingresar")) {
+            mesaje = "la palabra " + palabra + " debe ir acompañada de 'en'";
+        } else {
+            mesaje = "la palabra " + palabra + " debe ir acompañada de 'de'";
+        }
+        return mesaje;
+    }
+
+    public void aumentarContador() {
+        if (this.contador < this.palabrasNormalizadas.size() - 1) {
+            this.contador += 1;
         }
     }
 

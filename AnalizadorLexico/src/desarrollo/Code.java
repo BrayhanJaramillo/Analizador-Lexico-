@@ -292,6 +292,7 @@ public class Code {
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
     public boolean bien;
+    public boolean iniciaBien;
     DefaultTableModel modeloTabla = new DefaultTableModel();
 
     public void analizarPalabras(String[] palabras, JTextArea error, JTable jtDatos) {
@@ -306,37 +307,64 @@ public class Code {
                     palabra += palabras[i].charAt(j);
                 }
 
-                if (bien) {
+                if (iniciaBien) {
+
                     if (palabra.equals(palabrasReservadas.get(1))) {
                         lectura.add(palabra);
-                        bien = false;
+                        bien = true;
+                        iniciaBien = false;
                         modeloTabla.addRow(new Object[]{"Palabra Reservada", lectura.get(0) + " " + lectura.get(1)});
                         lectura.clear();
-                        continue;
+                        break;
                     } else {
                         error.setText("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
                         System.err.println("la palabra " + lectura.get(0) + " debe ir acompañada de la palabra " + palabrasReservadas.get(1));
-                        break;
+                        continue;
+                    }
+                }
+
+                if (bien) {
+                    try {
+
+                        if (!palabras[palabras.length - 1].equals(".")) {
+                            error.setText("la palabra debe de terminar en punto(.)");
+                            System.err.println("la palabra debe de terminar en punto(.)");
+                            continue;
+                        }else{
+                             modeloTabla.addRow(new Object[]{"Palabra Reservada", "."});
+                        }
+
+                        if (!palabrasReservadas.contains(palabra)) {
+                            modeloTabla.addRow(new Object[]{"Identificador", palabra});
+                            bien = false;
+                            break;
+                        } else if (palabrasReservadas.contains(palabra)) {
+                            error.setText("La Sentencia debe de tener un identificador antes del punto(.)");
+                            System.err.println("La Sentencia debe de tener un identificador antes del punto(.)");
+                            break;
+                        } else if (numeros.contains(Integer.parseInt(palabra))) {
+                            modeloTabla.addRow(new Object[]{"Entero", palabra});
+                            continue;
+                        }
+                    } catch (NumberFormatException number) {
+                        System.err.println("No castea" + number);
                     }
                 }
 
                 if (palabra.equals(palabrasReservadas.get(0))
                         || palabra.equals(palabrasReservadas.get(2))) {
                     lectura.add(palabra);
-                    bien = true;
+                    iniciaBien = true;
                     continue;
                 } else if (palabra.equals(palabrasReservadas.get(3))) {
                     lectura.add(palabra);
-                    bien = true;
+                    iniciaBien = true;
                     continue;
                 } else {
                     error.setText("Debe de empezar con Traer, Elimine o Actualice");
                     System.err.println("Debe de empezar con Traer, Elimine o Actualice");
-                    break;
+                    continue;
                 }
-                
-                
-                
 
             }
         }

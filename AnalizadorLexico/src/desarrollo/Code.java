@@ -315,25 +315,24 @@ public class Code {
             if (acompaniantePalabraInicial(obtenerPalabra(this.palabrasNormalizadas, this.contador), error)) {
                 aumentarContador();
                 if (!palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
-                    aumentarContador();
-                    if (this.palabrasNormalizadas.size() - 1 == this.contador) {
-                        if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals(".")) {
-                            System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf("."));
-                            System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf("."));
-                            if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
-                                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".")) {
-
-                                } else {
-                                    error.setText("Solo Debe de tener un '.'");
-                                    System.err.println("Solo Debe de tener un '.'");
-                                }
+                    if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == -1) {
+                        aumentarContador();
+                        this.lectura.add(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                        if (this.contador < this.palabrasNormalizadas.size()-1) {
+                            if (!lectura.get(0).equals(this.palabrasNormalizadas.get(this.palabrasNormalizadas.size() - 1))) {
 
                             } else {
-                                error.setText("Debe de terminar con '.'");
-                                System.err.println("Debe de terminar con '.'");
+                                error.setText("Solo debe de haber un punto(.)");
+                                System.err.println("Solo debe de haber un punto(.)");
                             }
+                        } else {
+                            parteFinal(error);
                         }
+                    } else {
+                        error.setText("los identificadores no deben de tener .");
+                        System.err.println("los identificadores no deben de tener .");
                     }
+
                 } else {
                     error.setText("Despues de una palabra reservada debe ir un identificador");
                     System.err.println("Despues de una palabra reservada debe ir un identificador");
@@ -394,6 +393,7 @@ public class Code {
             error.setText(mensaje(lectura.get(0)));
             System.err.println(mensaje(lectura.get(0)));
         }
+        this.lectura.clear();
         return retorno;
     }
 
@@ -446,9 +446,27 @@ public class Code {
         return mesaje;
     }
 
+    /**
+     * metodo que nos permite saber si podemos aumentar el contador en base a el
+     * arreglo de palabras que tenemos
+     */
     public void aumentarContador() {
         if (this.contador < this.palabrasNormalizadas.size() - 1) {
             this.contador += 1;
+        }
+    }
+
+    public void parteFinal(JTextArea error) {
+        if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals(".")) {
+            if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
+                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".")) {
+                    error.setText("Solo Debe de tener un '.'");
+                    System.err.println("Solo Debe de tener un '.'");
+                }
+            } else {
+                error.setText("Debe de terminar con '.'");
+                System.err.println("Debe de terminar con '.'");
+            }
         }
     }
 

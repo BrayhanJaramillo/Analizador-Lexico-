@@ -81,6 +81,7 @@ public class Interfaz extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextAreaError);
 
         area.setColumns(20);
+        area.setFont(new java.awt.Font("Monospaced", 0, 18)); // NOI18N
         area.setRows(5);
         area.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {

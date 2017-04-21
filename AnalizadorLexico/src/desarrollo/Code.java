@@ -45,9 +45,9 @@ public class Code {
     public Code() {
         llenarArrayNumeros();
     }
-
+    
     public boolean guardarArchivoContacto(String palabras, String nombreArchivo) {
-
+        
         Charset utf = StandardCharsets.UTF_8;
         Path lector = Paths.get(nombreArchivo + ".ssql");
         try (BufferedWriter escribir = Files.newBufferedWriter(lector, utf)) {
@@ -59,7 +59,7 @@ public class Code {
             return false;
         }
         return true;
-
+        
     }
 
     /**
@@ -70,13 +70,13 @@ public class Code {
      * @return Una lista con los contactos
      */
     public String cargarContenido(String nombreArchivo, JTextArea area) {
-
+        
         String temp;
         Charset utf = StandardCharsets.UTF_8;
         String cadena = "";
         Path lector = Paths.get(nombreArchivo);
         BufferedReader r;
-
+        
         try {
             r = Files.newBufferedReader(lector, utf);
             int i = 0;
@@ -85,16 +85,16 @@ public class Code {
                 System.out.println(temp);
                 if (temp.length() == 0) {
                     area.append("\n");
-
+                    
                 } else {
-
+                    
                     area.append(temp + "\n");
                 }
 
                 // area.append(persona);
                 i++;
             }
-
+            
             System.out.println("lineas: " + i);
             r.close();
         } catch (FileNotFoundException ex) {
@@ -114,23 +114,23 @@ public class Code {
      * @param personas
      */
     public void llenarTabla(JTable jtPersona, String palabras[], String filtro) {
-
+        
         limpiarTabla(jtPersona);
-
+        
         DefaultTableModel modelo = (DefaultTableModel) jtPersona.getModel();
         String[] fila = new String[9];
-
+        
         int contador = 1;
         while (contador <= palabras.length) {
-
+            
             fila[0] = palabras[contador];
             fila[1] = palabras[contador];
             fila[2] = palabras[contador];
-
+            
             modelo.addRow(fila);
             contador++;
         }
-
+        
         jtPersona.setModel(modelo);
     }
 
@@ -150,7 +150,7 @@ public class Code {
             }
         } catch (Exception e) {
             mensajeDialog("Error Tabla", "Error al limpiar la tabla", TelegraphType.NOTIFICATION_ERROR);
-
+            
         }
     }
 
@@ -163,17 +163,17 @@ public class Code {
      * @param filtro
      */
     public void refrescarTabla(JTable jtPersona, String palabras[], String filtro) {
-
+        
         limpiarTabla(jtPersona);
         DefaultTableModel modelo = (DefaultTableModel) jtPersona.getModel();
         Object[] fila = new Object[9];
-
+        
         int contador = 1;
         while (contador <= palabras.length) {
             fila[0] = palabras[contador];
             fila[1] = palabras[contador];
             fila[2] = palabras[contador];
-
+            
             modelo.addRow(fila);
             contador++;
         }
@@ -194,13 +194,13 @@ public class Code {
         d.setLocation(100, 100);
         d.setVisible(true);
         nombre = d.getDirectory() + d.getFile().concat(".ssql");
-
+        
         if (nombre != null) {
             mensajeDialog("Información", "El archivo fue guardado con exito", TelegraphType.NOTIFICATION_DONE);
         } else {
             mensajeDialog("Error", "Ha cancelado el guardado del archivo", TelegraphType.NOTIFICATION_WARNING);
         }
-
+        
         return nombre;
     }
 
@@ -217,18 +217,18 @@ public class Code {
         d.setFile("");
         d.setLocation(100, 100);
         d.setVisible(true);
-
+        
         nombre = d.getDirectory() + d.getFile();
         //  nombre = nombre.replace(".ssql", "");
         System.out.println("el nombre es: " + nombre);
-
+        
         if (nombre.endsWith(".ssql")) {
             JOptionPane.showMessageDialog(null, "El archivo ha sido cargado con exito", "Archivo Cargado", JOptionPane.OK_OPTION);
             nombre = nombre;
         } else {
             JOptionPane.showMessageDialog(null, "No se puede abrir esta extension de archivos", "Error al Abrir el Archivo", JOptionPane.OK_OPTION);
         }
-
+        
         return nombre;
     }
 
@@ -245,15 +245,15 @@ public class Code {
         TelegraphQueue q = new TelegraphQueue();
         q.add(tele);
     }
-
+    
     private final ArrayList<Integer> numeros = new ArrayList<>();
-
+    
     public void llenarArrayNumeros() {
         for (int i = 0; i < 10; i++) {
             this.numeros.add(i);
         }
     }
-
+    
     private final ArrayList<String> palabrasReservadas = new ArrayList<String>() {
         {
             add("Traer");
@@ -290,7 +290,7 @@ public class Code {
             add(",");
         }
     };
-
+    
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
     public int contador = 0;
@@ -308,40 +308,97 @@ public class Code {
     public void analizarPalabras(String[] palabras, JTextArea error, JTable jtDatos) {
         modeloTabla = (DefaultTableModel) jtDatos.getModel();
         this.palabrasNormalizadas = normalizarArray(palabras);
-
+        
         String palabra = obtenerPalabra(this.palabrasNormalizadas, this.contador);
         if (palabrasIniciales(palabra, error)) {
             aumentarContador();
             if (acompaniantePalabraInicial(obtenerPalabra(this.palabrasNormalizadas, this.contador), error)) {
                 aumentarContador();
-                if (!palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
-                    if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == -1) {
-                        aumentarContador();
-                        this.lectura.add(obtenerPalabra(this.palabrasNormalizadas, this.contador));
-                        if (this.contador < this.palabrasNormalizadas.size()-1) {
-                            if (!lectura.get(0).equals(this.palabrasNormalizadas.get(this.palabrasNormalizadas.size() - 1))) {
-
+                if (noEsPalabraReservada()) {
+                    if (estadoFinalizar()) {
+                        if (obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".") == obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".")) {
+                            if (this.palabrasNormalizadas.lastIndexOf(".") == this.palabrasNormalizadas.indexOf(".")) {
+                                if (estadoFinalizar()) {
+                                    aumentarContador();
+                                    if (esPalabraReservada()) {
+                                        if (palabraSiguiente(palabra, obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
+                                            aumentarContador();
+                                            if (noEsPalabraReservada()) {
+                                                if (estadoFinalizar()) {
+                                                    aumentarContador();
+                                                    if (esPalabraReservada() || obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
+                                                        if (estadoFinalizar()) {
+                                                            aumentarContador();
+                                                            if (esPalabraReservada()) {
+                                                                if (estadoFinalizar()) {
+                                                                    aumentarContador();
+                                                                    if (noEsPalabraReservada()) {
+                                                                        aumentarContador();
+                                                                        if (esPalabraReservada()) {
+                                                                            if (estadoFinalizar()) {
+                                                                                
+                                                                            } else {
+                                                                                parteFinal(error);
+                                                                            }
+                                                                        }
+                                                                    } else {
+                                                                        error.setText("Despues de una palabra reservada debe ir un identificador");
+                                                                        System.err.println("Despues de una palabra reservada debe ir un identificador");
+                                                                    }
+                                                                } else {
+                                                                    parteFinal(error);
+                                                                }
+                                                            } else {
+                                                                error.setText("Despues de un identificador debe de ir una palabra reservada");
+                                                                System.err.println("Despues de un identificador debe de ir una palabra reservada");
+                                                            }
+                                                        } else {
+                                                            parteFinal(error);
+                                                        }
+                                                    } else {
+                                                        error.setText("Despues de un identificador debe de ir una palabra reservada");
+                                                        System.err.println("Despues de un identificador debe de ir una palabra reservada");
+                                                    }
+                                                } else {
+                                                    parteFinal(error);
+                                                }
+                                            } else {
+                                                error.setText("Despues de una palabra reservada debe ir un identificador");
+                                                System.err.println("Despues de una palabra reservada debe ir un identificador");
+                                            }
+                                        } else {
+                                            error.setText("La palabra " + palabra + " no usa esta palabra reservada '" + obtenerPalabra(this.palabrasNormalizadas, this.contador) + "'");
+                                            System.err.println("La palabra " + palabra + " no usa esta palabra reservada '" + obtenerPalabra(this.palabrasNormalizadas, this.contador) + "'");
+                                        }
+                                    } else {
+                                        error.setText("Despues de un identificador debe de ir una palabra reservada");
+                                        System.err.println("Despues de un identificador debe de ir una palabra reservada");
+                                    }
+                                } else {
+                                    parteFinal(error);
+                                }
+                                
                             } else {
                                 error.setText("Solo debe de haber un punto(.)");
                                 System.err.println("Solo debe de haber un punto(.)");
                             }
                         } else {
-                            parteFinal(error);
+                            error.setText("los identificadores no deben de tener .");
+                            System.err.println("los identificadores no deben de tener .");
                         }
                     } else {
-                        error.setText("los identificadores no deben de tener .");
-                        System.err.println("los identificadores no deben de tener .");
+                        parteFinal(error);
                     }
-
+                    
                 } else {
                     error.setText("Despues de una palabra reservada debe ir un identificador");
                     System.err.println("Despues de una palabra reservada debe ir un identificador");
                 }
             }
         }
-
+        
         this.contador = 0;
-
+        
     }
 
     /**
@@ -455,7 +512,7 @@ public class Code {
             this.contador += 1;
         }
     }
-
+    
     public void parteFinal(JTextArea error) {
         if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals(".")) {
             if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
@@ -464,10 +521,38 @@ public class Code {
                     System.err.println("Solo Debe de tener un '.'");
                 }
             } else {
-                error.setText("Debe de terminar con '.'");
-                System.err.println("Debe de terminar con '.'");
+                error.setText(error.getText() + " " + "Debe de terminar con '.'");
+                System.err.println(error.getText() + "\n" + "Debe de terminar con '.'");
             }
         }
     }
-
+    
+    public boolean palabraSiguiente(String primeraPalabra, String siguiente) {
+        boolean retorno = false;
+        if ((primeraPalabra.equals("Traer") && (siguiente.equals("y") || siguiente.equals("el")))
+                || (primeraPalabra.equals("Actualice") && siguiente.equals("el"))
+                || primeraPalabra.equals("Ingresar") && siguiente.equals("el")) {
+            retorno = true;
+        } else if (primeraPalabra.equals("Elimine") && (siguiente.equals("todos") || siguiente.equals("los"))) {
+            retorno = true;
+        }
+        return retorno;
+    }
+    
+    public boolean estadoFinalizar() {
+        boolean retorno = false;
+        if (this.contador < (this.palabrasNormalizadas.size() - 1)) {
+            retorno = true;
+        }
+        return retorno;
+    }
+    
+    public boolean esPalabraReservada() {
+        return this.palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+    }
+    
+    public boolean noEsPalabraReservada() {
+        return !this.palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+    }
+    
 }

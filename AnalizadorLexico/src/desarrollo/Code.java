@@ -332,13 +332,23 @@ public class Code {
                     if (contador >= 1) {
                         for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
                             if (verificarPalabraNormal(error)) {
+                                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == -1) {
+                                    if (!estadoFinalizar()) {
+                                        parteFinal(error);
+                                    }
+                                }
+                            } else if (esPalabraReservada()
+                                    || obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
                                 if (!estadoFinalizar()) {
                                     parteFinal(error);
                                 }
-                            } else if (esPalabraReservada() || obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
-                                if (!estadoFinalizar()) {
-                                    parteFinal(error);
+                                if (!palabraSiguiente(palabra, obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
+                                    System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                                    mensajeOtros(palabra, obtenerPalabra(this.palabrasNormalizadas, this.contador), error);
+                                    aumentarContador();
+                                    continue;
                                 }
+
                             }
                             aumentarContador();
                         }
@@ -346,8 +356,8 @@ public class Code {
                 }
             }
         } else {
-            error.setText("Solo debe de contener una  palabra rreservada ','");
-            System.err.println("Solo debe de contener una  palabra rreservada ','");
+            error.setText("Solo debe de contener una  palabra rreservada '.'");
+            System.err.println("Solo debe de contener una  palabra rreservada '.'");
         }
 
         this.contador = 0;
@@ -432,6 +442,13 @@ public class Code {
         ArrayList<String> retorno = new ArrayList<>();
         for (int i = 0; i < array.length; i++) {
             if (array[i].length() > 0) {
+                if (i == array.length - 1) {
+                    if (array[i].lastIndexOf(".") != -1) {
+                        retorno.add(".");
+                        retorno.add(array[i].substring(0, array[i].lastIndexOf(".")));
+                        continue;
+                    }
+                }
                 retorno.add(array[i]);
             }
         }
@@ -505,6 +522,20 @@ public class Code {
 
     public boolean noEsPalabraReservada() {
         return !this.palabrasReservadas.contains(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+    }
+
+    public void mensajeOtros(String primeraPalabra, String siguiente, JTextArea error) {
+        if (!(primeraPalabra.equals("Traer") && (siguiente.equals("y") || siguiente.equals("el")))) {
+            error.setText("La palabra " + primeraPalabra + " va en su estructura con" + " 'el' o 'y'");
+            System.err.println("La palabra " + primeraPalabra + " va en su estructura con" + " 'el' o 'y'");
+        } else if ((primeraPalabra.equals("Actualice") && siguiente.equals("el"))
+                || primeraPalabra.equals("Ingresar") && siguiente.equals("el")) {
+            error.setText("La palabra " + primeraPalabra + " va en su estructura con" + " 'y'");
+            System.err.println("La palabra " + primeraPalabra + " va en su estructura con" + " 'y'");
+        } else if (!primeraPalabra.equals("Elimine") && (siguiente.equals("todos") || siguiente.equals("los"))) {
+            error.setText("La palabra " + primeraPalabra + " va en su estructura con" + " todos o el");
+            System.err.println("La palabra " + primeraPalabra + " va en su estructura con" + " 'todos' o 'el'");
+        }
     }
 
 }

@@ -346,6 +346,8 @@ public class Code {
                                     System.err.println("Despues de un identificador debe de ir una palabra reservada");
                                 }
                                 aumentarContador();
+                            }else{
+                                parteFinal(error);
                             }
                         }
 

@@ -340,6 +340,8 @@ public class Code {
 
                                 }
                                 aumentarContador();
+                            }else{
+                                parteFinal(error);
                             }
                         }
 

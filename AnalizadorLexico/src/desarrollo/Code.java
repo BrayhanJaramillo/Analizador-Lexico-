@@ -294,7 +294,7 @@ public class Code {
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
     public int contador = 0;
-    public boolean vamosBien = true;
+    public boolean vamosBien ;
     public ArrayList<String> palabrasNormalizadas;
     DefaultTableModel modeloTabla = new DefaultTableModel();
 
@@ -318,7 +318,7 @@ public class Code {
     public void analizarPalabras(String[] palabras, JTextArea error, JTable jtDatos) {
         modeloTabla = (DefaultTableModel) jtDatos.getModel();
         this.palabrasNormalizadas = normalizarArray(palabras);
-
+        this.vamosBien = true;
         String palabra = obtenerPalabra(this.palabrasNormalizadas, this.contador);
         if (obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".") == obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".")) {
             if (palabrasIniciales(palabra, error)) {
@@ -327,26 +327,26 @@ public class Code {
                     aumentarContador();
                     if (contador >= 1) {
                         for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
+                            if (estadoFinalizar()) {
+                                if (vamosBien) {
+                                    if (verificarPalabraNormal(error)) {
+                                        if (!estadoFinalizar()) {
+                                            parteFinal(error);
+                                        }
+                                        this.vamosBien = false;
 
-                            if (vamosBien) {
-                                if (verificarPalabraNormal(error)) {
+                                    }
+                                } else if (esPalabraReservada()) {
                                     if (!estadoFinalizar()) {
                                         parteFinal(error);
                                     }
-                                    this.vamosBien = false;
-
+                                    this.vamosBien = true;
+                                } else {
+                                    error.setText("Despues de un identificador debe de ir una palabra reservada");
+                                    System.err.println("Despues de un identificador debe de ir una palabra reservada");
                                 }
-                            } else if (esPalabraReservada()) {
-                                if (!estadoFinalizar()) {
-                                    parteFinal(error);
-                                }
-
-                            } else {
-                                error.setText("Despues de un identificador debe de ir una palabra reservada");
-                                System.err.println("Despues de un identificador debe de ir una palabra reservada");
+                                aumentarContador();
                             }
-                            aumentarContador();
-
                         }
 
                     }

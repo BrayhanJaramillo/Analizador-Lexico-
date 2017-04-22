@@ -304,10 +304,6 @@ public class Code {
             error.setText("Despues de una palabra reservada debe ir un identificador");
             System.err.println("Despues de una palabra reservada debe ir un identificador");
             return false;
-        } else if (obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".") != obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".")) {
-            error.setText("La palabra Reservada '.' debe ir despues de un identificador");
-            System.err.println("Despues de una palabra reservada debe ir un identificador");
-            return false;
         }
         return retorno;
     }
@@ -330,27 +326,24 @@ public class Code {
                 if (acompaniantePalabraInicial(obtenerPalabra(this.palabrasNormalizadas, this.contador), error)) {
                     aumentarContador();
                     if (contador >= 1) {
-                        for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
-                            if (verificarPalabraNormal(error)) {
-                                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") == -1) {
+                        if (estadoFinalizar()) {
+                            for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
+                                System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                                if (verificarPalabraNormal(error)) {
                                     if (!estadoFinalizar()) {
                                         parteFinal(error);
                                     }
-                                }
-                            } else if (esPalabraReservada()
-                                    || obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
-                                if (!estadoFinalizar()) {
-                                    parteFinal(error);
-                                }
-                                if (!palabraSiguiente(palabra, obtenerPalabra(this.palabrasNormalizadas, this.contador))) {
-                                    System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
-                                    mensajeOtros(palabra, obtenerPalabra(this.palabrasNormalizadas, this.contador), error);
-                                    aumentarContador();
-                                    continue;
-                                }
 
+                                } else if (esPalabraReservada()) {
+                                    if (!estadoFinalizar()) {
+                                        parteFinal(error);
+                                    }
+
+                                }
+                                aumentarContador();
                             }
-                            aumentarContador();
+                        } else {
+                            parteFinal(error);
                         }
                     }
                 }
@@ -444,8 +437,8 @@ public class Code {
             if (array[i].length() > 0) {
                 if (i == array.length - 1) {
                     if (array[i].lastIndexOf(".") != -1) {
-                        retorno.add(".");
                         retorno.add(array[i].substring(0, array[i].lastIndexOf(".")));
+                        retorno.add(".");
                         continue;
                     }
                 }
@@ -484,15 +477,8 @@ public class Code {
 
     public void parteFinal(JTextArea error) {
         if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals(".")) {
-            if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != -1) {
-                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).lastIndexOf(".") != obtenerPalabra(this.palabrasNormalizadas, this.contador).indexOf(".")) {
-                    error.setText("Solo Debe de tener un '.'");
-                    System.err.println("Solo Debe de tener un '.'");
-                }
-            } else {
-                error.setText(error.getText() + " " + "Debe de terminar con '.'");
-                System.err.println(error.getText() + "\n" + "Debe de terminar con '.'");
-            }
+            error.setText("Debe de terminar con '.'");
+            System.err.println("Debe de terminar con '.'");
         }
     }
 

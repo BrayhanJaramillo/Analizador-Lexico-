@@ -294,7 +294,7 @@ public class Code {
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
     public int contador = 0;
-    public boolean vamosBien ;
+    public boolean vamosBien;
     public ArrayList<String> palabrasNormalizadas;
     DefaultTableModel modeloTabla = new DefaultTableModel();
 
@@ -340,13 +340,60 @@ public class Code {
                                     if (!estadoFinalizar()) {
                                         parteFinal(error);
                                     }
+
+                                    if ((this.palabrasNormalizadas.lastIndexOf(",") != -1)) {
+                                        if (this.palabrasNormalizadas.lastIndexOf("donde") != -1) {
+                                            System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                                            if ((this.palabrasNormalizadas.lastIndexOf("donde") < this.palabrasNormalizadas.lastIndexOf(","))
+                                                    || (this.palabrasNormalizadas.lastIndexOf(",") > this.palabrasNormalizadas.lastIndexOf("."))
+                                                    || (this.palabrasNormalizadas.lastIndexOf(",") > this.palabrasNormalizadas.lastIndexOf("."))) {
+
+                                                error.setText("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir despues del separador");
+                                                System.err.println("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir despues del separador");
+                                            }
+
+                                            if (obtenerPalabra(this.palabrasNormalizadas, this.contador).equals("no")) {
+                                                aumentarContador();
+                                                System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                                                if (!validarEste(error)) {
+                                                    error.setText("Despues de");
+                                                    System.err.println("Despues de un este debe de ir un entre");
+                                                    continue;
+                                                }
+                                                break;
+                                            }
+
+                                            if (this.palabrasReservadas.contains("este")) {
+                                                System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                                                if (obtenerPalabra(this.palabrasNormalizadas, this.contador).equals("este")) {
+                                                    aumentarContador();
+                                                    if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals("entre")) {
+                                                        error.setText("Despues de un este debe de ir un entre");
+                                                        System.err.println("Despues de un este debe de ir un entre");
+                                                        continue;
+                                                    }
+                                                }
+                                            }
+
+                                        } else if (this.palabrasNormalizadas.lastIndexOf(",") != -1) {
+                                            if (this.palabrasNormalizadas.lastIndexOf("donde") > this.palabrasNormalizadas.lastIndexOf(",")) {
+                                                error.setText("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir sino esta el donde");
+                                                System.err.println("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir sino esta el donde");
+                                            }
+                                            if (this.palabrasNormalizadas.lastIndexOf(".") > this.palabrasNormalizadas.lastIndexOf(",")) {
+                                                error.setText("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir sino esta el donde");
+                                                System.err.println("Sintaxis error la palabra " + obtenerPalabra(this.palabrasNormalizadas, this.contador) + " no puede ir sino esta el donde");
+                                            }
+
+                                        }
+                                    }
                                     this.vamosBien = true;
                                 } else {
                                     error.setText("Despues de un identificador debe de ir una palabra reservada");
                                     System.err.println("Despues de un identificador debe de ir una palabra reservada");
                                 }
                                 aumentarContador();
-                            }else{
+                            } else {
                                 parteFinal(error);
                             }
                         }
@@ -443,11 +490,22 @@ public class Code {
             if (array[i].length() > 0) {
                 if (i == array.length - 1) {
                     if (array[i].lastIndexOf(".") != -1) {
-                        retorno.add(array[i].substring(0, array[i].lastIndexOf(".")));
-                        retorno.add(".");
+                        if (array[i].substring(0, array[i].lastIndexOf(".")).length() > 0) {
+                            retorno.add(array[i].substring(0, array[i].lastIndexOf(".")));
+                            retorno.add(".");
+                        } else {
+                            retorno.add(".");
+                        }
+
                         continue;
                     }
                 }
+                if (array[i].lastIndexOf(",") != -1) {
+                    retorno.add(array[i].substring(0, array[i].indexOf(",")));
+                    retorno.add(",");
+                    continue;
+                }
+
                 retorno.add(array[i]);
             }
         }
@@ -528,6 +586,17 @@ public class Code {
             error.setText("La palabra " + primeraPalabra + " va en su estructura con" + " todos o el");
             System.err.println("La palabra " + primeraPalabra + " va en su estructura con" + " 'todos' o 'el'");
         }
+    }
+
+    public boolean validarEste(JTextArea error) {
+        boolean retorno = false;
+        if (obtenerPalabra(this.palabrasNormalizadas, this.contador).equals("este")) {
+            aumentarContador();
+            if (!obtenerPalabra(this.palabrasNormalizadas, this.contador).equals("entre")) {
+                retorno = true;
+            }
+        }
+        return retorno;
     }
 
 }

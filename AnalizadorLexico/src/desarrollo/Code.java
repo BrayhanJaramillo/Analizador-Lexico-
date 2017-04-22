@@ -294,7 +294,7 @@ public class Code {
     private final int[] digitos = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     public ArrayList<String> lectura = new ArrayList<>();
     public int contador = 0;
-    public boolean iniciaBien;
+    public boolean vamosBien = true;
     public ArrayList<String> palabrasNormalizadas;
     DefaultTableModel modeloTabla = new DefaultTableModel();
 
@@ -327,22 +327,26 @@ public class Code {
                     aumentarContador();
                     if (contador >= 1) {
                         for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
-                            if (estadoFinalizar()) {
+
+                            if (vamosBien) {
                                 if (verificarPalabraNormal(error)) {
                                     if (!estadoFinalizar()) {
                                         parteFinal(error);
                                     }
-
-                                } else if (esPalabraReservada()) {
-                                    if (!estadoFinalizar()) {
-                                        parteFinal(error);
-                                    }
+                                    this.vamosBien = false;
 
                                 }
-                                aumentarContador();
-                            }else{
-                                parteFinal(error);
+                            } else if (esPalabraReservada()) {
+                                if (!estadoFinalizar()) {
+                                    parteFinal(error);
+                                }
+
+                            } else {
+                                error.setText("Despues de un identificador debe de ir una palabra reservada");
+                                System.err.println("Despues de un identificador debe de ir una palabra reservada");
                             }
+                            aumentarContador();
+
                         }
 
                     }

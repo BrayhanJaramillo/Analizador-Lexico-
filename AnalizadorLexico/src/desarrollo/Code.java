@@ -326,9 +326,8 @@ public class Code {
                 if (acompaniantePalabraInicial(obtenerPalabra(this.palabrasNormalizadas, this.contador), error)) {
                     aumentarContador();
                     if (contador >= 1) {
-                        if (estadoFinalizar()) {
-                            for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
-                                System.out.println(obtenerPalabra(this.palabrasNormalizadas, this.contador));
+                        for (int i = 0; i < this.palabrasNormalizadas.size() - 1; i++) {
+                            if (estadoFinalizar()) {
                                 if (verificarPalabraNormal(error)) {
                                     if (!estadoFinalizar()) {
                                         parteFinal(error);
@@ -342,9 +341,8 @@ public class Code {
                                 }
                                 aumentarContador();
                             }
-                        } else {
-                            parteFinal(error);
                         }
+
                     }
                 }
             }

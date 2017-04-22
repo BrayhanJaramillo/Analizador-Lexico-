@@ -113,23 +113,23 @@ public class Code {
      * @param jtPersona
      * @param personas
      */
-    public void llenarTabla(JTable jtPersona, String palabras[], String filtro) {
+    public void llenarTabla(JTable jtPersona, ArrayList<String> reservadas, ArrayList<String> identificador) {
 
         limpiarTabla(jtPersona);
 
         DefaultTableModel modelo = (DefaultTableModel) jtPersona.getModel();
-        String[] fila = new String[9];
+        String[] fila = new String[3];
 
-        int contador = 1;
-        while (contador <= palabras.length) {
+        int contador = 0;
+        while (contador < reservadas.size()) {
 
-            fila[0] = palabras[contador];
-            fila[1] = palabras[contador];
-            fila[2] = palabras[contador];
-
+            fila[0] = reservadas.get(contador);
+            fila[1] = identificador.get(contador);
             modelo.addRow(fila);
             contador++;
         }
+
+
 
         jtPersona.setModel(modelo);
     }

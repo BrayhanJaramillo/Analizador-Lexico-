@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 public class Interfaz extends javax.swing.JFrame {
 
     Code code = new Code();
+    Codigo codigo;
 
     private int contador = 1;
     DefaultListModel modeloLista;
@@ -231,7 +232,10 @@ public class Interfaz extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         jTextAreaError.setText("");
         String cadena = area.getText().replace("\n", " ");
-        code.analizarPalabras(cadena.split(" "), jTextAreaError, TablaDatos);
+        //code.analizarPalabras(cadena.split(" "), jTextAreaError, TablaDatos);
+        codigo= new Codigo(cadena);
+        codigo.validando(jTextAreaError, TablaDatos);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

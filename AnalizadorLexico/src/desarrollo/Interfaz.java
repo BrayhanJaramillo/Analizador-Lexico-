@@ -15,9 +15,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Interfaz extends javax.swing.JFrame {
 
-    Code code = new Code();
-    Codigo codigo;
 
+    IdentificarPalabras identificarPalabras;
     private int contador = 1;
     DefaultListModel modeloLista;
     DefaultTableModel modeloTabla;
@@ -32,7 +31,7 @@ public class Interfaz extends javax.swing.JFrame {
         modeloLista.addElement(this.contador);
         jLContador.setModel(modeloLista);
         area.requestFocus();
-
+        identificarPalabras = new IdentificarPalabras();
     }
 
     /**
@@ -225,17 +224,15 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void jRadioButtonMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButtonMenuItem1ActionPerformed
         // TODO add your handling code here:
-        String ruta = code.abrirArchivo();
-        String datos = code.cargarContenido(ruta, area);
+        String ruta = identificarPalabras.abrirArchivo();
+        String datos = identificarPalabras.cargarContenido(ruta, area);
     }//GEN-LAST:event_jRadioButtonMenuItem1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         jTextAreaError.setText("");
         String cadena = area.getText().replace("\n", " ");
-        //code.analizarPalabras(cadena.split(" "), jTextAreaError, TablaDatos);
-        codigo= new Codigo(cadena);
-        codigo.validando(jTextAreaError, TablaDatos);
-        
+        identificarPalabras.analizadorLexico(cadena.split(" "), TablaDatos, jTextAreaError);
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
